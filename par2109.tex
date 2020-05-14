@@ -87,9 +87,31 @@ linenos
 \begin{listing}[H]
 \inputminted[firstline=20,lastline=31]{c}{sources/multisort-tareador-leaf.c}
 \inputminted[firstline=33,lastline=51]{c}{sources/multisort-tareador-leaf.c}
-\caption{Problematic section in \texttt{mandel-omp.c} protected with \texttt{\#pragma omp critical}.}
-\label{listing:mandel-omp-critical}
+\caption{Calls to the tareador API added to multisort-tareador.c for the leaf task decomposition}
+\label{listing:tareador_leaf}
 \end{listing}
+
+\begin{listing}[H]
+\inputminted[firstline=20,lastline=31]{c}{sources/multisort-tareador-tree.c}
+\inputminted[firstline=33,lastline=51]{c}{sources/multisort-tareador-tree.c}
+\caption{Calls to the tareador API added to multisort-tareador.c for the tree task decomposition}
+\label{listing:tareador_leaf}
+\end{listing}
+
+\begin{figure}[H]
+\centering
+%\includegraphics[width=0.8\textwidth]{captures/tareador-leaf.png}
+\includegraphics[width=\textwidth]{dependency_graph_leaf.pdf}
+\caption{Task graph for leaf decomposition}
+\label{fig:tar_tasks_leaf}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{dependency_graph_tree.pdf}
+\caption{Task graph for tree decomposition}
+\label{fig:tar_tasks_tree}
+\end{figure}
 
 \section{Parallelization strategies}%
 \label{sec:par_strats}
