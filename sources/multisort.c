@@ -4,7 +4,17 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <tareador.h>
+#include <sys/time.h>
+double getusec_() {
+        struct timeval time;
+        gettimeofday(&time, NULL);
+        return ((double)time.tv_sec * (double)1e6 + (double)time.tv_usec);
+}
+
+#define START_COUNT_TIME stamp = getusec_();
+#define STOP_COUNT_TIME(_m) stamp = getusec_() - stamp;\
+                        stamp = stamp/1e6;\
+                        printf ("%s: %0.6f\n",(_m), stamp);
 
 // N and MIN must be powers of 2
 long N;
@@ -78,14 +88,14 @@ void check_sorted(long n, T data[n])
 
 int main(int argc, char **argv) {
 
-        /* Defaults for command line arguments */
-        /* Importsant: all of them should be powers of two */
-        N = 32 * 1024;
-        MIN_SORT_SIZE = 1024;
-        MIN_MERGE_SIZE = 1024;
+	/* Defaults for command line arguments */
+	/* Important: all of them should be powers of two */
+	N = 32768 * 1024;
+	MIN_SORT_SIZE = 1024;
+	MIN_MERGE_SIZE = 1024;
 
-        /* Process command-line arguments */
-        for (int i=1; i<argc; i++) {
+    	/* Process command-line arguments */
+    	for (int i=1; i<argc; i++) {
               if (strcmp(argv[i], "-n")==0) {
                               N = atol(argv[++i]) * 1024;
               }
@@ -97,12 +107,12 @@ int main(int argc, char **argv) {
               }
               else {
                       fprintf(stderr, "Usage: %s [-n vector_size -s MIN_SORT_SIZE -m MIN_MERGE_SIZE]\n", argv[0]);
-                      fprintf(stderr, "       -n to specify the size of the vector (in Kelements) to sort (default 32)\n");
+                      fprintf(stderr, "       -n to specify the size of the vector (in Kelements) to sort (default 32768)\n");
                       fprintf(stderr, "       -s to specify the size of the vector (in elements) that breaks recursion in the sort phase (default 1024)\n");
                       fprintf(stderr, "       -m to specify the size of the vector (in elements) that breaks recursion in the merge phase (default 1024)\n");
                       return EXIT_FAILURE;
               }
-        }
+    	}
 
         fprintf(stdout, "*****************************************************************************************\n");
         fprintf(stdout, "Problem size (in number of elements): N=%ld, MIN_SORT_SIZE=%ld, MIN_MERGE_SIZE=%ld\n", N, MIN_SORT_SIZE, MIN_MERGE_SIZE);
@@ -111,14 +121,25 @@ int main(int argc, char **argv) {
 	T *data = malloc(N*sizeof(T));
 	T *tmp = malloc(N*sizeof(T));
 	
+        double stamp;
+        START_COUNT_TIME;
+
 	initialize(N, data);
 	clear(N, tmp);
 
-	tareador_ON();
+        STOP_COUNT_TIME("Initialization time in seconds");
+
+   	START_COUNT_TIME;
+
    	multisort(N, data, tmp);
-	tareador_OFF();
+
+   	STOP_COUNT_TIME("Multisort execution time");
+
+   	START_COUNT_TIME;
 
    	check_sorted (N, data);
+
+   	STOP_COUNT_TIME("Check sorted data execution time");
 
     	fprintf(stdout, "Multisort program finished\n");
         fprintf(stdout, "*****************************************************************************************\n");

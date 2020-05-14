@@ -35,38 +35,35 @@ void merge(long n, T left[n], T right[n], T result[n*2], long start, long length
         basicmerge(n, left, right, result, start, length);
     } else {
         // Recursive decomposition
-        #pragma omp task
+        #pragma omp task final(depth > CUTOFF) mergeable
         merge(n, left, right, result, start, length/2, depth+1);
-        #pragma omp task
+        #pragma omp task final(depth > CUTOFF) mergeable
         merge(n, left, right, result, start + length/2, length/2, depth+1);
+        #pragma omp taskwait
     }
 }
 
 void multisort(long n, T data[n], T tmp[n], unsigned int depth) {
     if (n >= MIN_SORT_SIZE*4L) {
         // Recursive decomposition
-        #pragma omp taskgroup
-        {
-            #pragma omp task
-            multisort(n/4L, &data[0], &tmp[0], depth+1);
-            #pragma omp task
-            multisort(n/4L, &data[n/4L], &tmp[n/4L], depth+1);
-            #pragma omp task
-            multisort(n/4L, &data[n/2L], &tmp[n/2L], depth+1);
-            #pragma omp task
-            multisort(n/4L, &data[3L*n/4L], &tmp[3L*n/4L], depth+1);
-        }
+        #pragma omp task depend(out: data[0])
+        multisort(n/4L, &data[0], &tmp[0], depth+1);
+        #pragma omp task depend(out: data[n/4L])
+        multisort(n/4L, &data[n/4L], &tmp[n/4L], depth+1);
+        #pragma omp task depend(out: data[n/2L])
+        multisort(n/4L, &data[n/2L], &tmp[n/2L], depth+1);
+        #pragma omp task depend(out: data[3L*n/4L])
+        multisort(n/4L, &data[3L*n/4L], &tmp[3L*n/4L], depth+1);
 
-        #pragma omp taskgroup
-        {
-            #pragma omp task
-            merge(n/4L, &data[0], &data[n/4L], &tmp[0], 0, n/2L, depth+1);
-            #pragma omp task
-            merge(n/4L, &data[n/2L], &data[3L*n/4L], &tmp[n/2L], 0, n/2L, depth+1);
-        }
+        #pragma omp task depend(in: data[0], data[n/4L]) depend(out: tmp[0])
+        merge(n/4L, &data[0], &data[n/4L], &tmp[0], 0, n/2L, depth+1);
+        #pragma omp task depend(in: data[n/2L], data[3L*n/4L]) depend(out: tmp[n/2L])
+        merge(n/4L, &data[n/2L], &data[3L*n/4L], &tmp[n/2L], 0, n/2L, depth+1);
 
-        #pragma omp task
+        #pragma omp task depend(in: tmp[0], tmp[n/2L])
         merge(n/2L, &tmp[0], &tmp[n/2L], &data[0], 0, n, depth+1);
+
+        #pragma omp taskwait
     } else {
         // Base case
         basicsort(n, data);
