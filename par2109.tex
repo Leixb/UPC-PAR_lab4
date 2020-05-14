@@ -264,6 +264,27 @@ The relevant parts of the code are shown in listing~\ref{listing:omp_tree_cutoff
 
 As we can see in figures~\ref{fig:cutoff8} and \ref{fig:cutoff24}, the best results are obtained with a recursion
 level of 5.
+If we analyze the traces of cutoff with values 0 and 1 with paraver, we can see that the execution time is reduced
+from cutoff 0 to 1, but the time spent in scheduling and fork/join increases, this explains the results shown in
+figures~\ref{fig:cutoff8} and \ref{fig:cutoff24}: the execution time is reduced with higher cutoff values since
+there are more tasks that can be executed in parallel, however the overhead of task creation and synchronization
+at the deeper levels out-weights the benefits of having more tasks.
+
+
+\begin{figure}[H]
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{captures/paraver_c0_total.png}
+        \caption{Paraver OMP\_state\_profile cutoff 0}
+        \label{fig:cutoffparaver0} 
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{captures/paraver_c1_total.png}
+        \caption{Paraver OMP\_state\_profile cutoff 1}
+        \label{fig:cutoffparaver1} 
+    \end{minipage}
+\end{figure}
 
 \begin{figure}[H]
     \begin{minipage}{0.5\textwidth}
@@ -290,25 +311,6 @@ level of 5.
     \begin{minipage}{0.5\textwidth}
         \centering
         \includegraphics[width=0.7\linewidth]{plots/new-omp-tree-cutoff_boada7-crop.pdf}
-        \caption{Scalability analysis on boada-7}
-        \label{fig:cutoffboada7} 
-    \end{minipage}
-\end{figure}
-
-If we analyze the traces of cutoff with values 0 and 1 with paraver, we can see that the execution time is reduced
-from cutoff 0 to 1, but the time spent in scheduling and fork/join increases.
-
-
-\begin{figure}[H]
-    \begin{minipage}{0.5\textwidth}
-        \centering
-        \includegraphics[width=0.7\linewidth]{captures/paraver_c0.png}
-        \caption{Scalability analysis on boada-5 (cuda)}
-        \label{fig:cutoffboada5} 
-    \end{minipage}
-    \begin{minipage}{0.5\textwidth}
-        \centering
-        \includegraphics[width=0.7\linewidth]{captures/paraver_c1.png}
         \caption{Scalability analysis on boada-7}
         \label{fig:cutoffboada7} 
     \end{minipage}
