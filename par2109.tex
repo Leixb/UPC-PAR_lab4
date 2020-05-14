@@ -153,6 +153,8 @@ Tasks:    & 1     & 1     & 4     & 8     & 16    & 4     & 8     & 16    & 2   
 \label{tab:tree_tasks-rec_level}
 \end{table}
 
+% You should also comment the task ordering constraints that have been identified and the causes for them, and the different kind of synchronisations that could be used to enforce them.
+% TODO:
 
 % For the analysis of scalability, include a table with the execution time and speed-up as predicted by Tareador(for 1, 2, 4, 8, 16, 32 and 64 processors).
 \begin{table}[H]
@@ -288,6 +290,25 @@ level of 5.
     \begin{minipage}{0.5\textwidth}
         \centering
         \includegraphics[width=0.7\linewidth]{plots/new-omp-tree-cutoff_boada7-crop.pdf}
+        \caption{Scalability analysis on boada-7}
+        \label{fig:cutoffboada7} 
+    \end{minipage}
+\end{figure}
+
+If we analyze the traces of cutoff with values 0 and 1 with paraver, we can see that the execution time is reduced
+from cutoff 0 to 1, but the time spent in scheduling and fork/join increases.
+
+
+\begin{figure}[H]
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{captures/paraver_c0.png}
+        \caption{Scalability analysis on boada-5 (cuda)}
+        \label{fig:cutoffboada5} 
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{captures/paraver_c1.png}
         \caption{Scalability analysis on boada-7}
         \label{fig:cutoffboada7} 
     \end{minipage}
