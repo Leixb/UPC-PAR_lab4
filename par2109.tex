@@ -119,13 +119,13 @@ linenos
 \toprule
 Leaf strategy & & & & & \\
 \midrule
-Recursion level:        & 1     & 2     & 3     & 4     & 5  \\
-Tasks generated:    & 16    & 32    & 32    & 32    & 32 \\
+Rec level:        & 1     & 2     & 3     & 4     & 5  \\
+Tasks:    & 16    & 32    & 32    & 32    & 32 \\
 \bottomrule
 \end{tabular}
 
 \caption{Number of tasks that are generated at each recursion level for leaf strategy} 
-\label{tab:tasks_leaf}
+\label{tab:leaf_tasks-rec_level}
 \end{table}
 
 \begin{table}[H]
@@ -134,8 +134,8 @@ Tasks generated:    & 16    & 32    & 32    & 32    & 32 \\
 \toprule
 Tree strategy & & & & & & & & & & & & & & & & &\\
 \midrule
-Recursion level:        & 1     & 2     & 3     & 4     & 5     & 6     & 7     & 8     & 9     & 10    & 11    & 12    & 13    & 14    & 15    & 16    & 17  \\
-Tasks generated:    & 1     & 1     & 4     & 8     & 16    & 4     & 8     & 16    & 2     & 4     & 8     & 16    & 1     & 2     & 4     & 8    & 16 \\
+Rec level:        & 1     & 2     & 3     & 4     & 5     & 6     & 7     & 8     & 9     & 10    & 11    & 12    & 13    & 14    & 15    & 16    & 17  \\
+Tasks:    & 1     & 1     & 4     & 8     & 16    & 4     & 8     & 16    & 2     & 4     & 8     & 16    & 1     & 2     & 4     & 8    & 16 \\
 \bottomrule
 \end{tabular}
 
@@ -160,15 +160,30 @@ Processors & Exec time (ms)& Speed-up  & Exec time (ms)& Speed-up  \\
 64         & 79.746        & 15,8422   & 79.744        & 15,8426   \\
 \bottomrule
 \end{tabular}
-% te parece bien una tabla así?
 \caption{Table with the execution time and speed-up as predicted by \emph{Tareador}} 
 \label{tab:Exec_time-Speed-up}
 \end{table}
 
+% Are  the  results  close  to  the  ideal  case?
+In the table~\ref{tab:Exec_time-Speed-up} we can observe the execution time and speed-up as predicted by \emph{Tareador} for both strategies. We can see that for 1 to 16 processors the speed-up is quite close to the ideal case, but when we arrive to 32 processors the speed-up curve flattens away from the ideal line.
+
+%Any observable differences between both recursive task decomposition strategies (leaf and tree)?
+As shown in the table, both strategies (leaf and tree) have no big differences neither in execution time nor in speed-up, but it should be noted that with a low number of processors, the leaf strategy is a bit faster than the tree one, and with many processors the opposite happens.
+
+%Which is (are) the factor(s) that limit the scalability in this case
+In this case, with a large number of processors the scalability is limited because a large overhead is generated due to task creation. %TODO: ESTO ES ASI?
 
 \section{Parallelization strategies}%
 \label{sec:par_strats}
 
+We studied two approaches to paralellization, leaf and tree task decomposition. For the leaf decomposition, we
+defined tasks at the last level of the recursion: before calling \texttt{basicmerge} and \texttt{basicsort}. The
+code corresponding to this version can be seem in listing~\ref{listing:omp_leaf}. 
+
+For the tree task decomposition
+we had to take into account the dependencies between tasks that we found while doing the analysis with \empht{Tareador}. Those are that all tasks to \texttt{multisort} have to finish before calling the corresponding
+\texttt{merge}, and that the first two \texttt{merge} must finish before the last one. The code can be seen in
+listing~\ref{listing:omp_tree}.
 
 \begin{listing}[H]
 \inputminted[firstline=32,lastline=63]{c}{sources/multisort-omp-leaf.c}
@@ -181,6 +196,36 @@ Processors & Exec time (ms)& Speed-up  & Exec time (ms)& Speed-up  \\
 \caption{OpenMP pragmas added for tree decomposition}
 \label{listing:omp_tree}
 \end{listing}
+
+In figures~\ref{fig:ssa_leaf} and \ref{fig:ssa_tree} we can observe the strong scalability analysis
+of the leaf and the tree task decomposition respectively. It is clear from the plots that the
+tree decomposition gives much better results than the leaf approach (which flattens out at around 5 threads).
+Another fact to notice is that the speed-up of the multi-sort function has really good results, but the
+whole application does not, this means that there are portions of the code outside of the multisort that are
+affecting the performance noticeably.
+
+\begin{figure}[H]
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{plots/new-omp-leaf-crop.pdf}
+        \caption{Strong scalability analysis leaf task decomposition}
+        \label{fig:ssa_leaf} 
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{plots/new-omp-tree-crop.pdf}
+        \caption{Strong scalability analysis tree task decomposition}
+        \label{fig:ssa_tree} 
+    \end{minipage}
+\end{figure}
+
+\subsection{Cut-off}
+
+To add a cut-off mechanism based on the recursion level, we added a parameter to the functions
+\texttt{multisort} and \texttt{merge} called \texttt{depth} to keep track of the depth in the recursion.
+With this parameter, we can add \texttt{final(depth > CUTOFF) mergeable} to the task pragmas to indicate
+that once the depth is higher than the specified \texttt{CUTOFF} the next tasks should not be created.
+The relevant parts of the code are shown in listing~\ref{listing:omp_tree_cutoff}.
 
 \begin{listing}[H]
 \inputminted[firstline=32,lastline=74]{c}{sources/multisort-omp-tree-cutoff.c}
