@@ -1,0 +1,94 @@
+% vim: spell spelllang=en:
+\input{preamble}
+
+\usepackage[justification=centering]{caption}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{lipsum}
+
+\usepackage{siunitx}
+\usepackage{hyphenat}
+
+\usepackage{xcolor}
+
+\definecolor{LightGray}{rgb}{0.83, 0.83, 0.83}
+\definecolor{bg}{HTML}{282828}
+
+\usepackage[newfloat]{minted}
+\captionsetup[listing]{position=top}
+
+\setminted{
+style=monokai,
+%frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+breaklines,
+bgcolor=bg,
+fontsize=\footnotesize,
+linenos
+}
+
+\renewcommand\theadfont{\bfseries}
+
+\title{
+    PAR Laboratory Assignment\\
+    Lab 4: Divide and Conquer parallelism with OpenMP: Sorting
+}
+
+\author{
+    par2109:
+    Aleix Boné,
+    Alex Herrero
+}
+
+\date{
+    Spring 2019-20
+}
+
+\begin{document}
+
+\thispagestyle{empty}
+\clearpage
+\setcounter{page}{-1}
+
+\begin{titlepage}
+{
+    \centering
+    \null
+    \vfill
+    {\Huge \bfseries PAR Laboratory Assignment\par}
+    \vspace{3em}
+    {\Large {\scshape Lab 4:} Divide and Conquer parallelism with OpenMP: Sorting \par}
+    \vfill
+\begin{center}
+\end{center}
+    \vspace{3cm}
+
+    \vfill
+    {\raggedleft \Large
+        Aleix Boné\\
+        Alex Herrero\\
+        {\bfseries\ttfamily par2109}\\
+        \vspace{4em}
+        2020-05-15
+        \par}
+}
+\end{titlepage}
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}%
+\label{sec:intro}
+
+\section{Parallelization strategies}%
+\label{sec:par_strats}
+
+\section{Performance evaluation}%
+\label{sec:perf_eval}
+
+\section{Conclusions}%
+\label{sec:conclusions}
+
+\end{document}
