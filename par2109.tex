@@ -157,6 +157,7 @@ Tasks:    & 1     & 1     & 4     & 8     & 16    & 4     & 8     & 16    & 2   
 % TODO:
 
 % For the analysis of scalability, include a table with the execution time and speed-up as predicted by Tareador(for 1, 2, 4, 8, 16, 32 and 64 processors).
+% TODO:
 \begin{table}[H]
 \centering
 \begin{tabular}{llrlr}
@@ -287,19 +288,34 @@ at the deeper levels out-weights the benefits of having more tasks.
 \end{figure}
 
 \begin{figure}[H]
-    \begin{minipage}{0.5\textwidth}
+    %\begin{minipage}{0.5\textwidth}
         \centering
-        \includegraphics[width=0.7\textwidth]{plots/new-omp-tree-cutoff-5-crop.pdf}
+        \includegraphics[width=0.35\textwidth]{plots/new-omp-tree-cutoff-5-crop.pdf}
         \caption{Scalability analysis with cutoff=5}
         \label{fig:cutoff5} 
-    \end{minipage}
-    \begin{minipage}{0.5\textwidth}
+    %\end{minipage}
+\end{figure}
+
+\subsection{Scalability analysis on different boada architectures}
+
+Figure~\ref{fig:cutoff24} shows the scalability analysis on boada-4 with up to 24 threads instead of the
+default of 12, we can see that although boada-4 only has 12 cores, there is still improvement from 12 to 24,
+this is due that there are 2 threads per core, so the total number of threads that are available on boada-4
+is 24.
+
+\begin{figure}[H]
+    %\begin{minipage}{0.5\textwidth}
         \centering
-        \includegraphics[width=0.7\linewidth]{plots/new-omp-tree-cutoff-24-crop.pdf}
+        \includegraphics[width=0.35\linewidth]{plots/new-omp-tree-cutoff-24-crop.pdf}
         \caption{Scalability analysis with more than 12 threads}
         \label{fig:cutoff24} 
-    \end{minipage}
+    %\end{minipage}
 \end{figure}
+
+In figure~\ref{fig:cutoffboada5} we can see the scalability analysis on boada-5 (cuda), interestingly, the speed-up
+plot obtained is much better than the one we obtained on the other boada nodes, although it has the same number of
+cores than the boada-2, 3 and 4. With boada-7, shown in figure~\ref{fig:cutoffboada7} we can see that the speed-up
+plot obtained is similar to the ones in boada-4 (in this case we specified \texttt{np\_MAX=16} since it has 16 cores).
 
 \begin{figure}[H]
     \begin{minipage}{0.5\textwidth}
@@ -358,7 +374,7 @@ dependencies.
 
 \subsection{Parallelizing tmp and data initialization}
 
-To paralelize the tmp and data vector initizalization, we simply added a \texttt{pragma omp paralell for}
+To paralelize the tmp and data vector initizalization, we simply added a \texttt{pragma omp parallel for}
 clause and modified the for loops that initialized the vectors as shown in listing~\ref{listing:opt}.
 
 \begin{listing}[H]
@@ -366,6 +382,18 @@ clause and modified the for loops that initialized the vectors as shown in listi
 \caption{OpenMP pragmas added to paralelize the tmp and data vector initialization}
 \label{listing:opt}
 \end{listing}
+
+With this optimization we obtained the scalability plot shown in figure~\ref{fig:ssa_opt}. There
+is no noticeable improvement on the speed-up plot of the complete application, this is not what we expected.
+It is possible that the task creation creates unnecessary overheads (we could have specified a bigger grainsize), or that the compiler optimizes the
+initialization of the tmp array and by introducing OpenMP directives this optimization is no longer performed.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.35\linewidth]{plots/new-omp-tree-depen-opt-crop.pdf}
+        \caption{Strong scalability analysis with tmp and data initialization}
+        \label{fig:ssa_dep} 
+\end{figure}
 
 \section{Performance evaluation}%
 \label{sec:perf_eval}
