@@ -113,8 +113,58 @@ linenos
 \label{fig:tar_tasks_tree}
 \end{figure}
 
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+Leaf strategy & & & & & \\
+\midrule
+Recursion level:        & 1     & 2     & 3     & 4     & 5  \\
+Num tasks generated:    & 16    & 32    & 32    & 32    & 32 \\
+\bottomrule
+\end{tabular}
+
+\caption{Number of tasks that are generated at each recursion level for leaf strategy} 
+\label{tab:Execution_time}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrrrrrrrrrrrrrr}
+\toprule
+Tree strategy & & & & & & & & & & & & & & & & &\\
+\midrule
+Recursion level:        & 1     & 2     & 3     & 4     & 5     & 6     & 7     & 8     & 9     & 10    & 11    & 12    & 13    & 14    & 15    & 16    & 17  \\
+Num tasks generated:    & 1     & 1     & 4     & 8     & 16    & 4     & 8     & 16    & 2     & 4     & 8     & 16    & 1     & 2     & 4     & 8    & 16 \\
+\bottomrule
+\end{tabular}
+
+\caption{Number of tasks that are generated at each recursion level for tree strategy} 
+\label{tab:Execution_time}
+\end{table}
+
+
 \section{Parallelization strategies}%
 \label{sec:par_strats}
+
+
+\begin{listing}[H]
+\inputminted[firstline=32,lastline=63]{c}{sources/multisort-omp-leaf.c}
+\caption{OpenMP pragmas added for leaf decomposition}
+\label{listing:omp_leaf}
+\end{listing}
+
+\begin{listing}[H]
+\inputminted[firstline=32,lastline=74]{c}{sources/multisort-omp-tree.c}
+\caption{OpenMP pragmas added for tree decomposition}
+\label{listing:omp_tree}
+\end{listing}
+
+\begin{listing}[H]
+\inputminted[firstline=32,lastline=74]{c}{sources/multisort-omp-tree-cutoff.c}
+\caption{OpenMP pragmas added for tree decomposition with cutoff}
+\label{listing:omp_tree_cutoff}
+\end{listing}
 
 \section{Performance evaluation}%
 \label{sec:perf_eval}
