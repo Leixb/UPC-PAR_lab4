@@ -120,12 +120,12 @@ linenos
 Leaf strategy & & & & & \\
 \midrule
 Recursion level:        & 1     & 2     & 3     & 4     & 5  \\
-Num tasks generated:    & 16    & 32    & 32    & 32    & 32 \\
+Tasks generated:    & 16    & 32    & 32    & 32    & 32 \\
 \bottomrule
 \end{tabular}
 
 \caption{Number of tasks that are generated at each recursion level for leaf strategy} 
-\label{tab:Execution_time}
+\label{tab:tasks_leaf}
 \end{table}
 
 \begin{table}[H]
@@ -135,20 +135,34 @@ Num tasks generated:    & 16    & 32    & 32    & 32    & 32 \\
 Tree strategy & & & & & & & & & & & & & & & & &\\
 \midrule
 Recursion level:        & 1     & 2     & 3     & 4     & 5     & 6     & 7     & 8     & 9     & 10    & 11    & 12    & 13    & 14    & 15    & 16    & 17  \\
-Num tasks generated:    & 1     & 1     & 4     & 8     & 16    & 4     & 8     & 16    & 2     & 4     & 8     & 16    & 1     & 2     & 4     & 8    & 16 \\
+Tasks generated:    & 1     & 1     & 4     & 8     & 16    & 4     & 8     & 16    & 2     & 4     & 8     & 16    & 1     & 2     & 4     & 8    & 16 \\
 \bottomrule
 \end{tabular}
 
-Leaf
-Threads: 1 2 4 8 16 32 64
-Execution time (ms): 1.263.350  631.688
-
-Tree
-Threads: 1 2 4 8 16 32 64
-Execution time: 
-
 \caption{Number of tasks that are generated at each recursion level for tree strategy} 
 \label{tab:Execution_time}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llrlr}
+\toprule
+           & Leaf strategy &           & Tree strategy &           \\
+\midrule
+Processors & Exec time (ms)& Speed-up  & Exec time (ms)& Speed-up  \\
+\midrule
+1          & 1.263.350     & 1,0000    & 1.263.350     & 1,0000    \\
+2          & 631.688       & 2,0000    & 631.692       & 1,9999    \\
+4          & 315.851       & 3,9998    & 316.452       & 3,9922    \\
+8          & 158.381       & 7,9767    & 158.824       & 7,9544    \\
+16         & 79.788        & 15,8338   & 79.787        & 15,8340   \\
+32         & 79.746        & 15,8422   & 79.744        & 15,8426   \\
+64         & 79.746        & 15,8422   & 79.744        & 15,8426   \\
+\bottomrule
+\end{tabular}
+% te parece bien una tabla así?
+\caption{Table with the execution time and speed-up as predicted by \emph{Tareador}} 
+\label{tab:Exec_time-Speed-up}
 \end{table}
 
 
