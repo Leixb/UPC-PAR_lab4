@@ -328,6 +328,45 @@ the tasks depended as show in listing~\ref{listing:omp_tree_depen}.
 \label{listing:omp_tree_depen}
 \end{listing}
 
+In figures~\ref{fig:cutoffparavertask} and \ref{fig:cutoffparaverdep} we can see that
+the scheduling and fork/join time are reduced when using dependencies, but the time spent in task
+synchronization increases noticeably, and in fact the total execution time is higher than without the
+dependencies.
+
+\begin{figure}[H]
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{captures/paraver_sync_vanila.png}
+        \caption{Paraver trace with taskgroup and taskwait}
+        \label{fig:cutoffparavertask} 
+    \end{minipage}
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{captures/paraver_sync_depen.png}
+        \caption{Paraver trace with dependencies}
+        \label{fig:cutoffparaverdep} 
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.35\linewidth]{plots/new-omp-tree-depen-crop.pdf}
+        \caption{Strong scalability analysis with dependencies}
+        \label{fig:ssa_dep} 
+\end{figure}
+
+
+\subsection{Parallelizing tmp and data initialization}
+
+To paralelize the tmp and data vector initizalization, we simply added a \texttt{pragma omp paralell for}
+clause and modified the for loops that initialized the vectors as shown in listing~\ref{listing:opt}.
+
+\begin{listing}[H]
+\inputminted[firstline=73,lastline=85]{c}{sources/multisort-omp-tree-depen-opt.c}
+\caption{OpenMP pragmas added to paralelize the tmp and data vector initialization}
+\label{listing:opt}
+\end{listing}
+
 \section{Performance evaluation}%
 \label{sec:perf_eval}
 
