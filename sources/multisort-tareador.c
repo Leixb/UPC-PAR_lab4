@@ -18,18 +18,23 @@ void basicsort(long n, T data[n]);
 void basicmerge(long n, T left[n], T right[n], T result[n*2], long start, long length);
 
 void merge(long n, T left[n], T right[n], T result[n*2], long start, long length) {
-        if (length < MIN_MERGE_SIZE*2L) {
-                // Base case
-                basicmerge(n, left, right, result, start, length);
-        } else {
-                // Recursive decomposition
-                merge(n, left, right, result, start, length/2);
-                merge(n, left, right, result, start + length/2, length/2);
-        }
+    tareador_start_task("merge");
+    if (length < MIN_MERGE_SIZE*2L) {
+            // Base case
+            /* tareador_start_task("basicmerge"); */
+            basicmerge(n, left, right, result, start, length);
+            /* tareador_end_task("basicmerge"); */
+    } else {
+            // Recursive decomposition
+            merge(n, left, right, result, start, length/2);
+            merge(n, left, right, result, start + length/2, length/2);
+    }
+    tareador_end_task("merge");
 }
 
 void multisort(long n, T data[n], T tmp[n]) {
-        if (n >= MIN_SORT_SIZE*4L) {
+    tareador_start_task("multisort");
+    if (n >= MIN_SORT_SIZE*4L) {
                 // Recursive decomposition
                 multisort(n/4L, &data[0], &tmp[0]);
                 multisort(n/4L, &data[n/4L], &tmp[n/4L]);
@@ -42,8 +47,11 @@ void multisort(long n, T data[n], T tmp[n]) {
                 merge(n/2L, &tmp[0], &tmp[n/2L], &data[0], 0, n);
 	} else {
 		// Base case
+        /* tareador_start_task("basicsort"); */
 		basicsort(n, data);
+        /* tareador_end_task("basicsort"); */
 	}
+    tareador_end_task("multisort");
 }
 
 static void initialize(long length, T data[length]) {

@@ -71,19 +71,15 @@ void multisort(long n, T data[n], T tmp[n], unsigned int depth) {
 }
 
 static void initialize(long length, T data[length]) {
-    long i;
-    for (i = 0; i < length; i++) {
-        if (i==0) {
-            data[i] = rand();
-        } else {
-            data[i] = ((data[i-1]+1) * i * 104723L) % N;
-        }
+#pragma omp parallel for
+    for (int i = 0; i < length; i++) {
+        data[i] = rand();
     }
 }
 
 static void clear(long length, T data[length]) {
-    long i;
-    for (i = 0; i < length; i++) {
+#pragma omp parallel for
+    for (long i = 0; i < length; i++) {
         data[i] = 0;
     }
 }
