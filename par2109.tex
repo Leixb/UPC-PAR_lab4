@@ -154,25 +154,24 @@ Tasks:    & 1     & 1     & 4     & 8     & 16    & 4     & 8     & 16    & 2   
 \end{table}
 
 % You should also comment the task ordering constraints that have been identified and the causes for them, and the different kind of synchronisations that could be used to enforce them.
-% TODO:
+Thanks to the task dependence graphs generated, a couple task ordering constraints have been identified. The first one we can observe is that that each merge depends on the previous sorts. And the second one is that the last merge depends on the two previous merges. Those constraints can be enforced using synchronisation constraints such as \texttt{taskwait} or \texttt{taskgroup} as shown below.
 
 % For the analysis of scalability, include a table with the execution time and speed-up as predicted by Tareador(for 1, 2, 4, 8, 16, 32 and 64 processors).
-% TODO:
 \begin{table}[H]
 \centering
-\begin{tabular}{llrlr}
+\begin{tabular}{S[table-format=2]S[table-format=7]S[table-format=2.4]S[table-format=7]S[table-format=2.4]}
 \toprule
-           & Leaf strategy &           & Tree strategy &           \\
+& \multicolumn{2}{c}{Leaf strategy}  & \multicolumn{2}{c}{Tree strategy} \\
 \midrule
-Processors & Exec time (ms)& Speed-up  & Exec time (ms)& Speed-up  \\
+{Processors} & {Exec time (ms)} & {Speed-up}  & {Exec time (ms)} & {Speed-up}  \\
 \midrule
-1          & 1.263.350     & 1,0000    & 1.263.350     & 1,0000    \\
-2          & 631.688       & 2,0000    & 631.692       & 1,9999    \\
-4          & 315.851       & 3,9998    & 316.452       & 3,9922    \\
-8          & 158.381       & 7,9767    & 158.824       & 7,9544    \\
-16         & 79.788        & 15,8338   & 79.787        & 15,8340   \\
-32         & 79.746        & 15,8422   & 79.744        & 15,8426   \\
-64         & 79.746        & 15,8422   & 79.744        & 15,8426   \\
+1          & 1263350     & 1,0000    & 1263350     & 1,0000    \\
+2          & 631688       & 2,0000    & 631692       & 1,9999    \\
+4          & 315851       & 3,9998    & 316452       & 3,9922    \\
+8          & 158381       & 7,9767    & 158824       & 7,9544    \\
+16         & 79788        & 15,8338   & 79787        & 15,8340   \\
+32         & 79746        & 15,8422   & 79744        & 15,8426   \\
+64         & 79746        & 15,8422   & 79744        & 15,8426   \\
 \bottomrule
 \end{tabular}
 \caption{Table with the execution time and speed-up as predicted by \emph{Tareador}} 
@@ -184,9 +183,14 @@ In the table~\ref{tab:Exec_time-Speed-up} we can observe the execution time and 
 
 %Any observable differences between both recursive task decomposition strategies (leaf and tree)?
 As shown in the table, both strategies (leaf and tree) have no big differences neither in execution time nor in speed-up, but it should be noted that with a low number of processors, the leaf strategy is a bit faster than the tree one, and with many processors the opposite happens.
+We have to keep in mind however that these results don't take into account the task creation and synchronization
+overheads and therefore the results are not reliable since tree decomposition creates more tasks but also
+parallelizes the task creation, which doesn't happen with leaf decomposition.
 
 %Which is (are) the factor(s) that limit the scalability in this case
-In this case, with a large number of processors the scalability is limited because a large overhead is generated due to task creation. %TODO: ESTO ES ASI?
+In this case, the scalability is limited due to the problem size (n=32) which as we have shown before makes it so that
+there are at most 16 tasks that can be run in parallel at the same time, therefore once we have 16 threads we achieve maximum parallelism and any more threads added can't benefit the execution time. This wouldn't be the case if
+the problem size was bigger.
 
 \section{Parallelization strategies}%
 \label{sec:par_strats}
@@ -196,7 +200,7 @@ defined tasks at the last level of the recursion: before calling \texttt{basicme
 code corresponding to this version can be seem in listing~\ref{listing:omp_leaf}. 
 
 For the tree task decomposition
-we had to take into account the dependencies between tasks that we found while doing the analysis with \empht{Tareador}. Those are that all tasks to \texttt{multisort} have to finish before calling the corresponding
+we had to take into account the dependencies between tasks that we found while doing the analysis with \emph{Tareador}. Those are that all tasks to \texttt{multisort} have to finish before calling the corresponding
 \texttt{merge}, and that the first two \texttt{merge} must finish before the last one. The code can be seen in
 listing~\ref{listing:omp_tree}.
 
@@ -211,6 +215,9 @@ listing~\ref{listing:omp_tree}.
 \caption{OpenMP pragmas added for tree decomposition}
 \label{listing:omp_tree}
 \end{listing}
+
+\section{Performance evaluation}%
+\label{sec:perf_eval}
 
 In figures~\ref{fig:ssa_leaf} and \ref{fig:ssa_tree} we can observe the strong scalability analysis
 of the leaf and the tree task decomposition respectively. It is clear from the plots that the
@@ -234,6 +241,7 @@ affecting the performance noticeably.
     \end{minipage}
 \end{figure}
 
+\pagebreak
 \subsection{Cut-off}
 
 To add a cut-off mechanism based on the recursion level, we added a parameter to the functions
@@ -287,6 +295,7 @@ at the deeper levels out-weights the benefits of having more tasks.
     \end{minipage}
 \end{figure}
 
+
 \begin{figure}[H]
     %\begin{minipage}{0.5\textwidth}
         \centering
@@ -296,26 +305,31 @@ at the deeper levels out-weights the benefits of having more tasks.
     %\end{minipage}
 \end{figure}
 
-\subsection{Scalability analysis on different boada architectures}
-
-Figure~\ref{fig:cutoff24} shows the scalability analysis on boada-4 with up to 24 threads instead of the
-default of 12, we can see that although boada-4 only has 12 cores, there is still improvement from 12 to 24,
-this is due that there are 2 threads per core, so the total number of threads that are available on boada-4
-is 24.
+\pagebreak
+\subsection{Scalability analysis on more than 12 threads}
 
 \begin{figure}[H]
     %\begin{minipage}{0.5\textwidth}
         \centering
         \includegraphics[width=0.35\linewidth]{plots/new-omp-tree-cutoff-24-crop.pdf}
         \caption{Scalability analysis with more than 12 threads}
-        \label{fig:cutoff24} 
+        \label{fig:ssa_cutoff24} 
     %\end{minipage}
 \end{figure}
+
+Figure~\ref{fig:ssa_cutoff24} shows the scalability analysis on boada-4 with up to 24 threads instead of the
+default of 12, we can see that although boada-4 only has 12 cores, there is still improvement from 12 to 24,
+this is due that there are 2 threads per core, so the total number of threads that are available on boada-4
+is 24.
+
+\pagebreak
+\subsection{Scalability analysis on different boada architectures}
+
 
 In figure~\ref{fig:cutoffboada5} we can see the scalability analysis on boada-5 (cuda), interestingly, the speed-up
 plot obtained is much better than the one we obtained on the other boada nodes, although it has the same number of
 cores than the boada-2, 3 and 4. With boada-7, shown in figure~\ref{fig:cutoffboada7} we can see that the speed-up
-plot obtained is similar to the ones in boada-4 (in this case we specified \texttt{np\_MAX=16} since it has 16 cores).
+plot obtained is similar to the ones in boada-4 (in this case we specified \texttt{np\_MAX=16} since it has 16 cores with only 1 thread per core).
 
 \begin{figure}[H]
     \begin{minipage}{0.5\textwidth}
@@ -332,6 +346,7 @@ plot obtained is similar to the ones in boada-4 (in this case we specified \text
     \end{minipage}
 \end{figure}
 
+\pagebreak
 \subsection{Task dependencies}
 
 Instead of using \texttt{taskgroup} and \texttt{taskwait} to manage the dependencies of the tasks we
@@ -392,13 +407,19 @@ initialization of the tmp array and by introducing OpenMP directives this optimi
         \centering
         \includegraphics[width=0.35\linewidth]{plots/new-omp-tree-depen-opt-crop.pdf}
         \caption{Strong scalability analysis with tmp and data initialization}
-        \label{fig:ssa_dep} 
+        \label{fig:ssa_opt} 
 \end{figure}
 
-\section{Performance evaluation}%
-\label{sec:perf_eval}
 
 \section{Conclusions}%
 \label{sec:conclusions}
+
+We have seen that the best results are obtained with tree task decomposition using a cutoff mechanism
+(specifically a cutoff at depth 5) and that adding task dependencies instead of using \texttt{taskgroup} and
+\texttt{taskwait} constructs does not give noticeable benefits. Moreover, a big part of the application execution
+time is spent on data initialization and despite our approach to parallelize that section we could not manage to
+obtain a significant enough speed-up result for the whole application.
+
+
 
 \end{document}
